@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'clinics',
     'doctors',
-    'patients'
+    'patients',
+    'appointments',
+    'procedures',
+    'schedules'
 ]
 
 MIDDLEWARE = [
@@ -86,8 +89,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bright_smile_dental',
-        'USER': 'admin',
-        'PASSWORD': 'bright_smile',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432',
     }
