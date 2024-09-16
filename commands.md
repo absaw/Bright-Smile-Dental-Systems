@@ -2,9 +2,7 @@
 
 ## Git
 
-`git add .
-git commit -m ""
-git pull`
+`git add . git commit -m "" git pull`
 
 `git push origin`
 
@@ -19,7 +17,6 @@ Merging steps
 `git checkout main`
 `git merge branch-1`
 `git push origin main`
-
 
 ## PLSQL
 
@@ -39,8 +36,16 @@ For list of databases
 
 `\l`
 
-From next time, just use 
+From next time, just use
 
 `psql`
 
 `CREATE DATABASE bright_smile_dental;`
+
+## Django
+
+Querying the database
+
+`python manage.py shell`
+
+`from clinic.models import Clinic`
