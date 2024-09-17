@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1 class="h3 mb-4 text-gray-800">Clinics</h1>
+<div id="clinics-list"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/clinic_list.js' %}"></script>
+{% endblock %}

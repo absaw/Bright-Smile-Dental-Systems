@@ -11,6 +11,12 @@ class Clinic(models.Model):
     def __str__(self):
         return self.name
 
+    def doctor_count(self):
+        return self.doctorclinicaffiliation_set.count()
+    
+    def patient_count(self):
+        return self.patientclinicaffiliation_set.count()
+
 class PatientClinicAffiliation(models.Model):
     patient = models.ForeignKey('patients.Patient', on_delete=models.CASCADE)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
