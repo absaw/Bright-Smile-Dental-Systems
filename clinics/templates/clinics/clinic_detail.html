@@ -2,9 +2,45 @@
 {% load static %}
 
 {% block content %}
-<h1 class="h3 mb-4 text-gray-800">Clinic Detail</h1>
-<div id="clinic-detail"></div>
+<h1 class="h3 mb-4 text-gray-800">Clinic Details</h1>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Clinic Information</h6>
+    </div>
+    <div class="card-body">
+        <div id="clinic-info"></div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Affiliated Doctors</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="doctorsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Office Address</th>
+                        <th>Schedule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+{% endblock %}
+
 {% block extra_js %}
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
 <script src="{% static 'js/clinic_detail.js' %}"></script>
 {% endblock %}

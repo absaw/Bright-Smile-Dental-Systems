@@ -1,25 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/clinics/api/clinics/')
         .then(response => response.json())
-        .then(clinics => {
-            const clinicsList = document.getElementById('clinics-list');
-            clinics.forEach(clinic => {
-                const clinicElement = document.createElement('div');
-                clinicElement.className = 'card mb-4';
-                clinicElement.innerHTML = `
-                    <div class="card-body">
-                        <h5 class="card-title">${clinic.name}</h5>
-                        <p class="card-text">
-                            Phone: ${clinic.phone_number}<br>
-                            Location: ${clinic.city}, ${clinic.state}<br>
-                            Doctors: ${clinic.doctor_count}<br>
-                            Patients: ${clinic.patient_count}<br>
-                            id: ${clinic.id}
-                        </p>
-                        <a href="/clinics/${clinic.id}/" class="btn btn-primary">View Details</a>
-                    </div>
-                `;
-                clinicsList.appendChild(clinicElement);
+        .then(data => {
+            $('#clinicsTable').DataTable({
+                data: data,
+                columns: [
+                    { data: 'name' },
+                    { data: 'phone_number' },
+                    { data: 'city' },
+                    { data: 'state' },
+                    { data: 'doctor_count' },
+                    { data: 'patient_count' },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `<a href="/clinics/${row.id}/" class="btn btn-primary btn-sm">View Details</a>`;
+                        }
+                    }
+                ]
             });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load clinics data. Please try again.');
         });
 });

@@ -3,9 +3,36 @@
 
 {% block content %}
 <h1 class="h3 mb-4 text-gray-800">Clinics</h1>
-<div id="clinics-list"></div>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="clinicsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Doctors</th>
+                        <th>Patients</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
 <script src="{% static 'js/clinic_list.js' %}"></script>
 {% endblock %}
