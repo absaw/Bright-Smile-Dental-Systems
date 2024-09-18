@@ -49,3 +49,9 @@ Querying the database
 `python manage.py shell`
 
 `from clinic.models import Clinic`
+
+### Color:
+
+`#479dcc`
+
+`rbga(71, 157, 204,0.5)`
