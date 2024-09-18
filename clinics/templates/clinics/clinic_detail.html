@@ -1,46 +1,29 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1 class="h3 mb-4 text-gray-800">Clinic Details</h1>
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Clinic Information</h6>
-    </div>
-    <div class="card-body">
-        <div id="clinic-info"></div>
-    </div>
-</div>
+<h3>Clinic Details</h3>
+<div id="clinic-info"></div>
+<button id="edit-clinic-btn" class="btn btn-primary">Edit Clinic Info</button>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Affiliated Doctors</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="doctorsTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Office Address</th>
-                        <th>Schedule</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data will be populated by JavaScript -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% endblock %}
+<!-- <h3>Procedures</h3> -->
+<!-- <ul id="procedures-list"></ul> -->
 
-{% block extra_css %}
-<link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+<h3>Doctors</h3>
+<table id="doctorsTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Office Address</th>
+            <th>Schedule</th>
+            <th>Procedures</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
-<script src="{% static 'js/clinic_detail.js' %}"></script>
+<script src="/static/js/clinic_detail.js"></script>
 {% endblock %}
