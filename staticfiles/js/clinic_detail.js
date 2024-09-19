@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/clinics/api/clinics/${clinicId}/`)
             .then(response => response.json())
             .then(data => {
-                // Populate clinic info
                 document.getElementById('clinic-info').innerHTML = `
                     <p><strong>Name:</strong> <span id="clinic-name">${data.name}</span></p>
                     <p><strong>Address:</strong> <span id="clinic-address">${data.address}</span></p>
@@ -29,11 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p><strong>Email:</strong> <span id="clinic-email">${data.email}</span></p>
                 `;
 
-                // Populate procedures
-                // const proceduresList = document.getElementById('procedures-list');
-                // proceduresList.innerHTML = data.procedures.map(proc => `<li>${proc.name}</li>`).join('');
-
-                // Initialize DataTable for doctors
                 if ($.fn.DataTable.isDataTable('#doctorsTable')) {
                     $('#doctorsTable').DataTable().destroy();
                 }
@@ -42,9 +36,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     columns: [
                         { data: 'name' },
                         { data: 'office_address' },
-                        { data: 'schedule' },
-                        { data: 'procedures' }
-                    ]
+                        { data: 'working_schedule' },
+                        {
+                            data: null,
+                            render: function(data, type, row) {
+                                return `<button class="btn btn-primary btn-sm edit-doctor" data-id="${row.id}">Edit</button>`;
+                            }
+                        }
+                    ],
+                    pageLength: 25,
+                    lengthMenu: [25, 50, 100],
+                    order: [[0, 'asc']],
+                    language: {
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
                 });
             })
             .catch(error => {
@@ -55,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     loadClinicData();
 
-    // Edit clinic info
     document.getElementById('edit-clinic-btn').addEventListener('click', function() {
         const clinicInfo = document.getElementById('clinic-info');
         const name = document.getElementById('clinic-name').textContent;
@@ -77,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('cancel-edit').addEventListener('click', loadClinicData);
     });
 
-    // Use event delegation for the dynamically created form
     document.addEventListener('submit', function(e) {
         if (e.target && e.target.id === 'edit-clinic-form') {
             e.preventDefault();
@@ -102,5 +107,90 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('An error occurred while updating clinic information.');
             });
         }
+    });
+
+    $('#doctorsTable').on('click', '.edit-doctor', function() {
+        const doctorId = $(this).data('id');
+        const row = $(this).closest('tr');
+        const office_address = row.find('td:eq(1)').text();
+        const working_schedule = row.find('td:eq(2)').text();
+
+        $('#editDoctorId').val(doctorId);
+        $('#editDoctorOfficeAddress').val(office_address);
+        $('#editDoctorSchedule').val(working_schedule);
+
+        $('#editDoctorModal').modal('show');
+    });
+
+    $('#saveEditDoctorBtn').click(function() {
+        const formData = new FormData($('#editDoctorForm')[0]);
+        formData.append('clinic_id', clinicId);
+
+        fetch(`/clinics/api/doctors/${$('#editDoctorId').val()}/update-affiliation/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                $('#editDoctorModal').modal('hide');
+                loadClinicData();
+            } else {
+                alert('Failed to update doctor information. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating doctor information.');
+        });
+    });
+
+    document.getElementById('add-doctor-btn').addEventListener('click', function() {
+        fetch(`/clinics/api/doctors/available/?clinic_id=${clinicId}`)
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('doctorSelect');
+                select.innerHTML = '<option value="">Select a doctor...</option>';
+                data.forEach(doctor => {
+                    const option = document.createElement('option');
+                    option.value = doctor.id;
+                    option.textContent = doctor.name;
+                    select.appendChild(option);
+                });
+                $('#addDoctorModal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load available doctors. Please try again.');
+            });
+    });
+
+    $('#saveAddDoctorBtn').click(function() {
+        const formData = new FormData($('#addDoctorForm')[0]);
+        formData.append('clinic_id', clinicId);
+
+        fetch('/clinics/api/doctors/add-affiliation/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                $('#addDoctorModal').modal('hide');
+                loadClinicData();
+            } else {
+                alert('Failed to add doctor affiliation. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding doctor affiliation.');
+        });
     });
 });

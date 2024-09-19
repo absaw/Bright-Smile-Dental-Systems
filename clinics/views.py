@@ -61,6 +61,7 @@ def get_clinics(request):
 #         clinic.save()
 #         return JsonResponse({'status': 'success'})
 #     return JsonResponse({'status': 'error'}, status=400)
+
 @ensure_csrf_cookie
 def get_clinic_detail(request, clinic_id):
     clinic = get_object_or_404(Clinic, id=clinic_id)
@@ -78,7 +79,7 @@ def get_clinic_detail(request, clinic_id):
             'id': affiliation.doctor.id,
             'name': affiliation.doctor.name,
             'office_address': affiliation.office_address,
-            'schedule': 'Schedule info not available',  # You'll need to implement this based on your schedule model
+            'working_schedule': 'Schedule info not available',  # You'll need to implement this based on your schedule model
             'procedures': ', '.join([dp.procedure.name for dp in DoctorProcedure.objects.filter(doctor=affiliation.doctor).select_related('procedure')])
         } for affiliation in doctor_affiliations]
     }
@@ -94,3 +95,52 @@ def update_clinic(request, clinic_id):
         clinic.save()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+@ensure_csrf_cookie
+def get_available_doctors(request):
+    clinic_id = request.GET.get('clinic_id')
+    affiliated_doctors = DoctorClinicAffiliation.objects.filter(clinic_id=clinic_id).values_list('doctor_id', flat=True)
+    available_doctors = Doctor.objects.exclude(id__in=affiliated_doctors)
+    data = [{'id': doctor.id, 'name': doctor.name} for doctor in available_doctors]
+    return JsonResponse(data, safe=False)
+
+@ensure_csrf_cookie
+def add_doctor_affiliation(request):
+    if request.method == 'POST':
+        doctor_id = request.POST.get('doctor_id')
+        clinic_id = request.POST.get('clinic_id')
+        office_address = request.POST.get('office_address')
+        working_schedule = request.POST.get('working_schedule')
+
+        doctor = get_object_or_404(Doctor, id=doctor_id)
+        clinic = get_object_or_404(Clinic, id=clinic_id)
+
+        affiliation, created = DoctorClinicAffiliation.objects.get_or_create(
+            doctor=doctor,
+            clinic=clinic,
+            defaults={'office_address': office_address, 'working_schedule': working_schedule}
+        )
+
+        if not created:
+            affiliation.office_address = office_address
+            affiliation.working_schedule = working_schedule
+            affiliation.save()
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@ensure_csrf_cookie
+def update_doctor_affiliation(request, doctor_id):
+    if request.method == 'POST':
+        clinic_id = request.POST.get('clinic_id')
+        office_address = request.POST.get('office_address')
+        working_schedule = request.POST.get('working_schedule')
+
+        affiliation = get_object_or_404(DoctorClinicAffiliation, doctor_id=doctor_id, clinic_id=clinic_id)
+        affiliation.office_address = office_address
+        affiliation.working_schedule = working_schedule
+        affiliation.save()
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+

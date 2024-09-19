@@ -17,7 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             return `<a href="/clinics/${row.id}/" class="btn btn-primary btn-sm">View Details</a>`;
                         }
                     }
-                ]
+                ],
+                pageLength: 25,
+                lengthMenu: [25, 50, 100],
+                order: [[0, 'asc']],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search..."
+                },
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
             });
         })
         .catch(error => {

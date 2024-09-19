@@ -1,0 +1,27 @@
+/* Make sorting arrows visible */
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+    opacity: 1;
+}
+
+/* Adjust search bar and entries dropdown */
+.dataTables_wrapper .dataTables_length {
+    float: right;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: left;
+    text-align: left;
+}
+
+/* Optional: Style improvements */
+.dataTables_wrapper .dataTables_length select {
+    width: 75px;
+    display: inline-block;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    width: 200px;
+    display: inline-block;
+}

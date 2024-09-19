@@ -5,7 +5,7 @@ class Doctor(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
-
+    # schedule = models.TextField(blank=True)
     def __str__(self):
         return self.name
 
@@ -13,7 +13,7 @@ class DoctorClinicAffiliation(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     clinic = models.ForeignKey('clinics.Clinic', on_delete=models.CASCADE)
     office_address = models.TextField()
-
+    working_schedule = models.TextField(blank=True)
     class Meta:
         unique_together = ('doctor', 'clinic')
 
