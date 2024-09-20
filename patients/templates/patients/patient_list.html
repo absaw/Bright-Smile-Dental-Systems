@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Patient Details - Bright Smile{% endblock title %}
+
+{% block content %}
+<h1 class="h3 mb-4 text-gray-800">Patients</h1>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="patientsTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date of Birth</th>
+                        <th>Last Visit Date</th>
+                        <th>Last Visit Doctor</th>
+                        <th>Last Visit Procedures</th>
+                        <th>Next Appointment Date</th>
+                        <th>Next Appointment Doctor</th>
+                        <th>Next Appointment Procedure</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/patient_list.js' %}"></script>
+{% endblock %}

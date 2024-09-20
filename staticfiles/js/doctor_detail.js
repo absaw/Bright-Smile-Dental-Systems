@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 } else {
                     console.log("No clinic data available");
-                    $('#clinicsTable').html('<tr><td colspan="3">No affiliated clinics found.</td></tr>');
+                    $('#clinicsTable').html('<tr><td colspan="3">No affiliated clinics.</td></tr>');
                 }
 
                 // Initialize patients table
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 } else {
                     console.log("No patient data available");
-                    $('#patientsTable').html('<tr><td colspan="3">No affiliated patients found.</td></tr>');
+                    $('#patientsTable').html('<tr><td colspan="3">No affiliated patients.</td></tr>');
                 }
             })
             .catch(error => {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p><strong>Email:</strong> <input type="email" name="email" value="${data.email}"></p>
                         <p><strong>Phone:</strong> <input type="text" name="phone_number" value="${data.phone_number}"></p>
                         <p><strong>Specialties:</strong> 
-                            <select name="specialties" multiple>
+                            <select name="specialties" id="specialties-select" multiple>
                                 ${specialtiesOptions}
                             </select>
                         </p>
@@ -122,6 +122,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
                     </form>
                 `;
+
+                // Initialize multiselect dropdown
+                MultiselectDropdown({
+                    search: true,
+                    placeholder: 'Select specialties',
+                    txtSelected: 'selected',
+                    txtAll: 'All',
+                    txtRemove: 'Remove',
+                    txtSearch: 'Search specialties',
+                });
 
                 document.getElementById('cancel-edit').addEventListener('click', loadDoctorData);
             })
@@ -135,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target && e.target.id === 'edit-doctor-form') {
             e.preventDefault();
             const formData = new FormData(e.target);
+            
             fetch(`/doctors/api/doctors/${doctorId}/update/`, {
                 method: 'POST',
                 body: formData,
@@ -156,4 +167,63 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // document.getElementById('edit-doctor-btn').addEventListener('click', function() {
+    //     fetch(`/doctors/api/doctors/${doctorId}/`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const doctorInfo = document.getElementById('doctor-info');
+    //             const specialtiesOptions = data.all_procedures.map(proc => 
+    //                 `<option value="${proc.id}" ${data.specialties.includes(proc.name) ? 'selected' : ''}>${proc.name}</option>`
+    //             ).join('');
+
+    //             doctorInfo.innerHTML = `
+    //                 <form id="edit-doctor-form">
+    //                     <p><strong>NPI:</strong> <input type="text" name="npi" value="${data.npi}"></p>
+    //                     <p><strong>Name:</strong> <input type="text" name="name" value="${data.name}"></p>
+    //                     <p><strong>Email:</strong> <input type="email" name="email" value="${data.email}"></p>
+    //                     <p><strong>Phone:</strong> <input type="text" name="phone_number" value="${data.phone_number}"></p>
+    //                     <p><strong>Specialties:</strong> 
+    //                         <select name="specialties" multiple>
+    //                             ${specialtiesOptions}
+    //                         </select>
+    //                     </p>
+    //                     <button type="submit" class="btn btn-primary">Save</button>
+    //                     <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
+    //                 </form>
+    //             `;
+
+    //             document.getElementById('cancel-edit').addEventListener('click', loadDoctorData);
+    //         })
+    //         .catch(error => {
+    //             console.error("Error fetching doctor data for edit:", error);
+    //             alert("Failed to load doctor data for editing. Please try again.");
+    //         });
+    // });
+
+    // document.addEventListener('submit', function(e) {
+    //     if (e.target && e.target.id === 'edit-doctor-form') {
+    //         e.preventDefault();
+    //         const formData = new FormData(e.target);
+    //         fetch(`/doctors/api/doctors/${doctorId}/update/`, {
+    //             method: 'POST',
+    //             body: formData,
+    //             headers: {
+    //                 'X-CSRFToken': csrftoken
+    //             }
+    //         })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.status === 'success') {
+    //                 loadDoctorData();
+    //             } else {
+    //                 alert('Failed to update doctor information. Please try again.');
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             alert('An error occurred while updating doctor information.');
+    //         });
+    //     }
+    // });
 });

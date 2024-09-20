@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Edit Doctors - Bright Smile{% endblock title %}
+{% block extra_css %}
+    <!-- Add Select2 CSS -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+    <!-- Add your custom select.css -->
+    <!-- <link href="{% static 'css/select.css' %}" rel="stylesheet" /> -->
+{% endblock extra_css %}
 
 {% block content %}
 <h1 class="h3 mb-4 text-gray-800">Doctor Details</h1>
@@ -56,5 +62,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/multiselect-dropdown.js' %}"></script>
 <script src="{% static 'js/doctor_detail.js' %}"></script>
 {% endblock %}

@@ -49,6 +49,7 @@ def get_doctor_detail(request, doctor_id):
             'last_visit_date': 'N/A'  # You'll need to implement this based on your visit model
         } for affiliation in patient_affiliations]
     }
+    # print(data)
     return JsonResponse(data)
 
 def update_doctor(request, doctor_id):
