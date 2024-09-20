@@ -5,10 +5,6 @@ from doctors.models import Doctor, DoctorClinicAffiliation, DoctorProcedure
 from procedures.models import Procedure
 # Create your views here.
 from django.views.decorators.csrf import ensure_csrf_cookie
-
-def get_index(request):
-    if request.method == "GET":
-        return render(request,'index.html')
     
 def clinic_list(request):
     return render(request, 'clinics/clinic_list.html')

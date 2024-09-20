@@ -15,16 +15,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include,re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
-
+from . import views
+from django.conf.urls import handler404
+from django.views.generic import TemplateView
+from django.contrib.staticfiles.views import serve
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', lambda request: redirect('clinics/')),
     # path('', include('clinics.urls')),
     path('clinics/', include('clinics.urls')),
+    path('doctors/', include('doctors.urls')),
+    path('patients/', include('patients.urls')),
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# if settings.DEBUG:
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # else:
+    # This is key for serving static files with DEBUG=False
+    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # urlpatterns += re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+handler404 = TemplateView.as_view(template_name='404.html')

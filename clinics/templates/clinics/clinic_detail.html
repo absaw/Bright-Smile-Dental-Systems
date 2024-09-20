@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}Edit Clinic Details- Bright Smile{% endblock title %}
+
 {% block content %}
 <h1 class="h3 mb-4 text-gray-800">Clinic Details</h1>
-
-<div id="clinic-info"></div>
-<button id="edit-clinic-btn" class="btn btn-primary mb-3">Edit Clinic Info</button>
+<div class="card shadow mb-4">
+    <div id="clinic-info" class="card-body"></div>
+    <button id="edit-clinic-btn" class="btn btn-primary mb-4">Edit</button>
+</div>
 
 <h2 class="h4 mb-3 text-gray-800">Doctors</h2>
-<button id="add-doctor-btn" class="btn btn-success mb-3">Add Existing Doctor</button>
+<button id="add-doctor-btn" class="btn btn-success mb-3">Affiliate Doctor to Clinic</button>
 <table id="doctorsTable" class="table table-striped">
     <thead>
         <tr>
@@ -56,7 +59,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addDoctorModalLabel">Add Existing Doctor</h5>
+                <h5 class="modal-title" id="addDoctorModalLabel">Affiliate Doctor to Clinic</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -81,7 +84,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveAddDoctorBtn">Add Doctor</button>
+                <button type="button" class="btn btn-primary" id="saveAddDoctorBtn">Save Changes</button>
             </div>
         </div>
     </div>

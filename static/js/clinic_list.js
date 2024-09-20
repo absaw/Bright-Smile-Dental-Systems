@@ -25,7 +25,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     search: "",
                     searchPlaceholder: "Search..."
                 },
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
+                layout: {
+                    top: {
+                        searchPane: {
+                            className: 'row',
+                            rows: [
+                                {
+                                    className: 'col-sm-12 col-md-6',
+                                    cells: [{ data: 'f' }]
+                                },
+                                {
+                                    className: 'col-sm-12 col-md-6',
+                                    cells: [{ data: 'l' }]
+                                }
+                            ]
+                        }
+                    },
+                    bottom: 'rtip'
+                }
             });
         })
         .catch(error => {

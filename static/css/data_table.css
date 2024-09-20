@@ -25,3 +25,11 @@ table.dataTable thead .sorting_desc:after {
     width: 200px;
     display: inline-block;
 }
+.search-bar {
+    padding-left: 0;
+}
+
+.entries-selector {
+    padding-right: 0;
+    text-align: right;
+}

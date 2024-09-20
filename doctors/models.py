@@ -1,7 +1,7 @@
 from django.db import models
 
 class Doctor(models.Model):
-    npi = models.CharField(max_length=10, unique=True)
+    npi = models.CharField(max_length=10, unique=True, blank=False, null=False)
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
