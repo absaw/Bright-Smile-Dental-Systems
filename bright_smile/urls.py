@@ -28,10 +28,11 @@ from django.contrib.auth.decorators import login_required
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_required(lambda request: redirect('clinics/')), name='home'),
-    path('clinics/', include('clinics.urls')),  
-    path('doctors/', include('doctors.urls')),  
-    path('patients/', include('patients.urls')),  
-    path('members/', include('members.urls')),
+    path('clinics/', include('clinics.urls'),name='clinics'),  
+    path('doctors/', include('doctors.urls'),name='doctors'),  
+    path('patients/', include('patients.urls'),name='patients'),  
+    path('', include('members.urls')),
+    
 ]
 # if settings.DEBUG:
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
