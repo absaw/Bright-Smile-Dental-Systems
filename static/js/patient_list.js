@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         data: null,
                         render: function(data, type, row) {
-                            return `<a href="/patients/${row.id}/" class="btn btn-primary btn-sm">View Details</a>`;
+                            return `<a href="/patients/${row.id}/" class="btn btn-primary btn-sm">View/Edit</a>`;
                         }
                     }
                 ],

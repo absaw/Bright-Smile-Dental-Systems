@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Edit Doctors - Bright Smile{% endblock title %}
-{% block extra_css %}
-    <!-- Add Select2 CSS -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
-    <!-- Add your custom select.css -->
-    <!-- <link href="{% static 'css/select.css' %}" rel="stylesheet" /> -->
-{% endblock extra_css %}
 
+{% block title %}Edit Doctor Details - Bright Smile{% endblock title %}
+{% block extracss %}
+<link href="{% static 'css/select.css' %}" rel="stylesheet" />
+{% endblock %}
 {% block content %}
 <h1 class="h3 mb-4 text-gray-800">Doctor Details</h1>
-<div class="card shadow mb-4">
-    <div id="doctor-info" class="card-body">
-        
-    </div>
-    <button id="edit-doctor-btn" class="btn btn-primary mb-4">Edit</button>
-</div>
-<!-- <div id="doctor-info" class="card shadow mb-4">
-    <div class="card-body">
-    </div>
-</div> -->
 
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Doctor Information</h6>
+        <button id="edit-doctor-btn" class="btn btn-primary btn-sm">
+            <i class="fas fa-edit fa-sm text-white-50"></i> Edit
+        </button>
+    </div>
+    <div id="doctor-info" class="card-body">
+        <table class="table table-borderless">
+            <tbody>
+                <!-- Doctor info will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <h2 class="h4 mb-3 text-gray-800">Affiliated Clinics</h2>
+
 <div class="card shadow mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-borderless" id="clinicsTable" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="clinicsTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -35,6 +38,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Clinic data will be populated by JavaScript -->
                 </tbody>
             </table>
         </div>
@@ -42,10 +46,11 @@
 </div>
 
 <h2 class="h4 mb-3 text-gray-800">Affiliated Patients</h2>
+
 <div class="card shadow mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-borderless" id="patientsTable" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="patientsTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -54,14 +59,39 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Patient data will be populated by JavaScript -->
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<!-- Edit Doctor Modal -->
+<div class="modal fade" id="editDoctorModal" tabindex="-1" role="dialog" aria-labelledby="editDoctorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editDoctorModalLabel">Edit Doctor Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-doctor-form">
+                    <!-- Form fields will be populated by JavaScript -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-doctor-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/multiselect-dropdown.js' %}"></script>
 <script src="{% static 'js/doctor_detail.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {% endblock %}

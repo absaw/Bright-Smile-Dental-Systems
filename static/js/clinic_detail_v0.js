@@ -21,12 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/clinics/api/clinics/${clinicId}/`)
             .then(response => response.json())
             .then(data => {
-                const clinicInfoTable = document.querySelector('#clinic-info table tbody');
-                clinicInfoTable.innerHTML = `
-                    <tr><th>Name:</th><td>${data.name}</td></tr>
-                    <tr><th>Address:</th><td>${data.address}</td></tr>
-                    <tr><th>Phone Number:</th><td>${data.phone_number}</td></tr>
-                    <tr><th>Email:</th><td>${data.email}</td></tr>
+                document.getElementById('clinic-info').innerHTML = `
+                    <p><strong>Name:</strong> <span id="clinic-name">${data.name}</span></p>
+                    <p><strong>Address:</strong> <span id="clinic-address">${data.address}</span></p>
+                    <p><strong>Phone:</strong> <span id="clinic-phone">${data.phone_number}</span></p>
+                    <p><strong>Email:</strong> <span id="clinic-email">${data.email}</span></p>
                 `;
 
                 if ($.fn.DataTable.isDataTable('#doctorsTable')) {
@@ -45,8 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }
                     ],
-                    pageLength: 10,
-                    lengthMenu: [10, 25, 50],
+                    pageLength: 25,
+                    lengthMenu: [25, 50, 100],
                     order: [[0, 'asc']],
                     language: {
                         search: "",
@@ -64,47 +63,70 @@ document.addEventListener('DOMContentLoaded', function() {
     loadClinicData();
 
     document.getElementById('edit-clinic-btn').addEventListener('click', function() {
-        fetch(`/clinics/api/clinics/${clinicId}/`)
+        const clinicInfo = document.getElementById('clinic-info');
+        const name = document.getElementById('clinic-name').textContent;
+        const address = document.getElementById('clinic-address').textContent;
+        const phone = document.getElementById('clinic-phone').textContent;
+        const email = document.getElementById('clinic-email').textContent;
+
+        clinicInfo.innerHTML = `
+            <form id="edit-clinic-form">
+                <p><strong>Name:</strong> <input type="text" name="name" value="${name}"></p>
+                <p><strong>Address:</strong> <input type="text" name="address" value="${address}"></p>
+                <p><strong>Phone:</strong> <input type="text" name="phone_number" value="${phone}"></p>
+                <p><strong>Email:</strong> <input type="email" name="email" value="${email}"></p>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
+            </form>
+        `;
+
+        document.getElementById('cancel-edit').addEventListener('click', loadClinicData);
+    });
+
+    document.addEventListener('submit', function(e) {
+        if (e.target && e.target.id === 'edit-clinic-form') {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            fetch(`/clinics/api/clinics/${clinicId}/update/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
             .then(response => response.json())
             .then(data => {
-                const form = document.getElementById('edit-clinic-form');
-                form.innerHTML = `
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="${data.name}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <textarea class="form-control" id="address" name="address" required>${data.address}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone_number">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone_number" name="phone_number" value="${data.phone_number}" required pattern="[0-9]{10}" title="Please enter a 10-digit phone number">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="${data.email}" required>
-                    </div>
-                `;
-                $('#editClinicModal').modal('show');
+                if (data.status === 'success') {
+                    loadClinicData();
+                } else {
+                    alert('Failed to update clinic information. Please try again.');
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to load clinic data for editing. Please try again.');
+                alert('An error occurred while updating clinic information.');
             });
+        }
     });
 
-    document.getElementById('save-clinic-btn').addEventListener('click', function() {
-        const form = document.getElementById('edit-clinic-form');
-        
-        if (form.checkValidity() === false) {
-            form.reportValidity();
-            return;
-        }
+    $('#doctorsTable').on('click', '.edit-doctor', function() {
+        const doctorId = $(this).data('id');
+        const row = $(this).closest('tr');
+        const office_address = row.find('td:eq(1)').text();
+        const working_schedule = row.find('td:eq(2)').text();
 
-        const formData = new FormData(form);
+        $('#editDoctorId').val(doctorId);
+        $('#editDoctorOfficeAddress').val(office_address);
+        $('#editDoctorSchedule').val(working_schedule);
 
-        fetch(`/clinics/api/clinics/${clinicId}/update/`, {
+        $('#editDoctorModal').modal('show');
+    });
+
+    $('#saveEditDoctorBtn').click(function() {
+        const formData = new FormData($('#editDoctorForm')[0]);
+        formData.append('clinic_id', clinicId);
+
+        fetch(`/clinics/api/doctors/${$('#editDoctorId').val()}/update-affiliation/`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -114,27 +136,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                $('#editClinicModal').modal('hide');
+                $('#editDoctorModal').modal('hide');
                 loadClinicData();
             } else {
-                alert('Failed to update clinic information. Please try again.');
+                alert('Failed to update doctor information. Please try again.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while updating clinic information.');
+            alert('An error occurred while updating doctor information.');
         });
-    });
-
-    $('#doctorsTable').on('click', '.edit-doctor', function() {
-        const doctorId = $(this).data('id');
-        const row = $(this).closest('tr');
-        const office_address = row.find('td:eq(1)').text();
-        const working_schedule = row.find('td:eq(2)').text();
-
-        // Implement edit doctor functionality here
-        // You can create a new modal for editing doctor affiliation or use an inline edit
-        console.log(`Edit doctor ${doctorId} affiliation`);
     });
 
     document.getElementById('add-doctor-btn').addEventListener('click', function() {
@@ -157,15 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    document.getElementById('save-add-doctor-btn').addEventListener('click', function() {
-        const form = document.getElementById('add-doctor-form');
-        
-        if (form.checkValidity() === false) {
-            form.reportValidity();
-            return;
-        }
-
-        const formData = new FormData(form);
+    $('#saveAddDoctorBtn').click(function() {
+        const formData = new FormData($('#addDoctorForm')[0]);
         formData.append('clinic_id', clinicId);
 
         fetch('/clinics/api/doctors/add-affiliation/', {

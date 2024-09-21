@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -9,6 +9,11 @@ from schedules.models import TimeSlot
 @ensure_csrf_cookie
 def patient_list(request):
     return render(request, 'patients/patient_list.html')
+
+@ensure_csrf_cookie
+def patient_detail(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    return render(request, 'patients/patient_detail.html', {'patient': patient})
 
 def get_patients(request):
     patients = Patient.objects.all()
@@ -34,3 +39,44 @@ def get_patients(request):
         data.append(patient_data)
     
     return JsonResponse(data, safe=False)
+
+def get_patient_detail(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    visits = Visit.objects.filter(patient=patient).order_by('-time_slot__date', '-time_slot__start_time')
+    
+    visit_data = []
+    for visit in visits:
+        procedures = VisitProcedure.objects.filter(visit=visit)
+        visit_data.append({
+            'date_time': f"{visit.time_slot.date} {visit.time_slot.start_time}",
+            'doctor_name': visit.doctor.name,
+            'clinic_name': visit.clinic.name,
+            'procedures': ', '.join([vp.procedure.name for vp in procedures]),
+            'doctor_notes': visit.doctor_notes
+        })
+
+    data = {
+        'id': patient.id,
+        'name': patient.name,
+        'address': patient.address,
+        'phone_number': patient.phone_number,
+        'date_of_birth': patient.date_of_birth,
+        'ssn_last_4': patient.ssn_last_4,
+        'gender': patient.gender,
+        'visits': visit_data
+    }
+    
+    return JsonResponse(data)
+
+def update_patient(request, patient_id):
+    if request.method == 'POST':
+        patient = get_object_or_404(Patient, id=patient_id)
+        patient.name = request.POST.get('name')
+        patient.address = request.POST.get('address')
+        patient.phone_number = request.POST.get('phone_number')
+        patient.date_of_birth = request.POST.get('date_of_birth')
+        patient.ssn_last_4 = request.POST.get('ssn_last_4')
+        patient.gender = request.POST.get('gender')
+        patient.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)

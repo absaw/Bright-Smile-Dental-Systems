@@ -26,69 +26,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log("Received data:", data); // Log the received data
-
-                document.getElementById('doctor-info').innerHTML = `
-                    <p><strong>NPI:</strong> <span id="doctor-npi">${data.npi}</span></p>
-                    <p><strong>Name:</strong> <span id="doctor-name">${data.name}</span></p>
-                    <p><strong>Email:</strong> <span id="doctor-email">${data.email}</span></p>
-                    <p><strong>Phone:</strong> <span id="doctor-phone">${data.phone_number}</span></p>
-                    <p><strong>Specialties:</strong> <span id="doctor-specialties">${data.specialties.join(', ')}</span></p>
+                const doctorInfoTable = document.querySelector('#doctor-info table tbody');
+                doctorInfoTable.innerHTML = `
+                    <tr><th>NPI:</th><td>${data.npi}</td></tr>
+                    <tr><th>Name:</th><td>${data.name}</td></tr>
+                    <tr><th>Email:</th><td>${data.email}</td></tr>
+                    <tr><th>Phone:</th><td>${data.phone_number}</td></tr>
+                    <tr><th>Specialties:</th><td>${data.specialties.join(', ')}</td></tr>
                 `;
 
-                // Check if tables already exist and destroy them if they do
+                // Initialize clinics table
                 if ($.fn.DataTable.isDataTable('#clinicsTable')) {
                     $('#clinicsTable').DataTable().destroy();
                 }
+                $('#clinicsTable').DataTable({
+                    data: data.affiliated_clinics,
+                    columns: [
+                        { data: 'name' },
+                        { data: 'office_address' },
+                        { data: 'working_schedule' }
+                    ],
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50],
+                    order: [[0, 'asc']],
+                    language: {
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
+                });
+
+                // Initialize patients table
                 if ($.fn.DataTable.isDataTable('#patientsTable')) {
                     $('#patientsTable').DataTable().destroy();
                 }
-
-                // Initialize clinics table
-                if (data.affiliated_clinics && data.affiliated_clinics.length > 0) {
-                    $('#clinicsTable').DataTable({
-                        data: data.affiliated_clinics,
-                        columns: [
-                            { data: 'name' },
-                            { data: 'office_address' },
-                            { data: 'working_schedule' }
-                        ],
-                        pageLength: 25,
-                        lengthMenu: [25, 50, 100],
-                        order: [[0, 'asc']],
-                        language: {
-                            search: "",
-                            searchPlaceholder: "Search..."
-                        },
-                        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
-                    });
-                } else {
-                    console.log("No clinic data available");
-                    $('#clinicsTable').html('<tr><td colspan="3">No affiliated clinics.</td></tr>');
-                }
-
-                // Initialize patients table
-                if (data.affiliated_patients && data.affiliated_patients.length > 0) {
-                    $('#patientsTable').DataTable({
-                        data: data.affiliated_patients,
-                        columns: [
-                            { data: 'name' },
-                            { data: 'date_of_birth' },
-                            { data: 'last_visit_date' }
-                        ],
-                        pageLength: 25,
-                        lengthMenu: [25, 50, 100],
-                        order: [[0, 'asc']],
-                        language: {
-                            search: "",
-                            searchPlaceholder: "Search..."
-                        },
-                        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
-                    });
-                } else {
-                    console.log("No patient data available");
-                    $('#patientsTable').html('<tr><td colspan="3">No affiliated patients.</td></tr>');
-                }
+                $('#patientsTable').DataTable({
+                    data: data.affiliated_patients,
+                    columns: [
+                        { data: 'name' },
+                        { data: 'date_of_birth' },
+                        { data: 'last_visit_date' }
+                    ],
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50],
+                    order: [[0, 'asc']],
+                    language: {
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
+                });
             })
             .catch(error => {
                 console.error("An error occurred: ", error);
@@ -102,38 +89,38 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/doctors/api/doctors/${doctorId}/`)
             .then(response => response.json())
             .then(data => {
-                const doctorInfo = document.getElementById('doctor-info');
+                const form = document.getElementById('edit-doctor-form');
                 const specialtiesOptions = data.all_procedures.map(proc => 
                     `<option value="${proc.id}" ${data.specialties.includes(proc.name) ? 'selected' : ''}>${proc.name}</option>`
                 ).join('');
 
-                doctorInfo.innerHTML = `
-                    <form id="edit-doctor-form">
-                        <p><strong>NPI:</strong> <input type="text" name="npi" value="${data.npi}"></p>
-                        <p><strong>Name:</strong> <input type="text" name="name" value="${data.name}"></p>
-                        <p><strong>Email:</strong> <input type="email" name="email" value="${data.email}"></p>
-                        <p><strong>Phone:</strong> <input type="text" name="phone_number" value="${data.phone_number}"></p>
-                        <p><strong>Specialties:</strong> 
-                            <select name="specialties" id="specialties-select" multiple>
-                                ${specialtiesOptions}
-                            </select>
-                        </p>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
-                    </form>
+                form.innerHTML = `
+                    <div class="form-group">
+                        <label for="npi">NPI</label>
+                        <input type="text" class="form-control" id="npi" name="npi" value="${data.npi}" required pattern="[0-9]{10}" title="NPI must be a 10-digit number">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="${data.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="${data.email}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" value="${data.phone_number}" required pattern="[0-9]{10}" title="Please enter a 10-digit phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="specialties">Specialties</label>
+                        <select class="form-control" id="specialties" name="specialties" multiple required size="5">
+                            ${specialtiesOptions}
+                        </select>
+                        <small class="form-text text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple specialties.</small>
+                    </div>
                 `;
 
-                // Initialize multiselect dropdown
-                MultiselectDropdown({
-                    search: true,
-                    placeholder: 'Select specialties',
-                    txtSelected: 'selected',
-                    txtAll: 'All',
-                    txtRemove: 'Remove',
-                    txtSearch: 'Search specialties',
-                });
-
-                document.getElementById('cancel-edit').addEventListener('click', loadDoctorData);
+                $('#editDoctorModal').modal('show');
             })
             .catch(error => {
                 console.error("Error fetching doctor data for edit:", error);
@@ -141,89 +128,42 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    document.addEventListener('submit', function(e) {
-        if (e.target && e.target.id === 'edit-doctor-form') {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            
-            fetch(`/doctors/api/doctors/${doctorId}/update/`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': csrftoken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    loadDoctorData();
-                } else {
-                    alert('Failed to update doctor information. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating doctor information.');
-            });
+    document.getElementById('save-doctor-btn').addEventListener('click', function() {
+        const form = document.getElementById('edit-doctor-form');
+        
+        if (form.checkValidity() === false) {
+            form.reportValidity();
+            return;
         }
+
+        const formData = new FormData(form);
+        
+        // Handle multiple selected specialties
+        const specialties = Array.from(form.specialties.selectedOptions).map(option => option.value);
+        formData.delete('specialties');
+        specialties.forEach(specialty => {
+            formData.append('specialties', specialty);
+        });
+
+        fetch(`/doctors/api/doctors/${doctorId}/update/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                $('#editDoctorModal').modal('hide');
+                loadDoctorData();
+            } else {
+                alert('Failed to update doctor information. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating doctor information.');
+        });
     });
-
-    // document.getElementById('edit-doctor-btn').addEventListener('click', function() {
-    //     fetch(`/doctors/api/doctors/${doctorId}/`)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const doctorInfo = document.getElementById('doctor-info');
-    //             const specialtiesOptions = data.all_procedures.map(proc => 
-    //                 `<option value="${proc.id}" ${data.specialties.includes(proc.name) ? 'selected' : ''}>${proc.name}</option>`
-    //             ).join('');
-
-    //             doctorInfo.innerHTML = `
-    //                 <form id="edit-doctor-form">
-    //                     <p><strong>NPI:</strong> <input type="text" name="npi" value="${data.npi}"></p>
-    //                     <p><strong>Name:</strong> <input type="text" name="name" value="${data.name}"></p>
-    //                     <p><strong>Email:</strong> <input type="email" name="email" value="${data.email}"></p>
-    //                     <p><strong>Phone:</strong> <input type="text" name="phone_number" value="${data.phone_number}"></p>
-    //                     <p><strong>Specialties:</strong> 
-    //                         <select name="specialties" multiple>
-    //                             ${specialtiesOptions}
-    //                         </select>
-    //                     </p>
-    //                     <button type="submit" class="btn btn-primary">Save</button>
-    //                     <button type="button" id="cancel-edit" class="btn btn-secondary">Cancel</button>
-    //                 </form>
-    //             `;
-
-    //             document.getElementById('cancel-edit').addEventListener('click', loadDoctorData);
-    //         })
-    //         .catch(error => {
-    //             console.error("Error fetching doctor data for edit:", error);
-    //             alert("Failed to load doctor data for editing. Please try again.");
-    //         });
-    // });
-
-    // document.addEventListener('submit', function(e) {
-    //     if (e.target && e.target.id === 'edit-doctor-form') {
-    //         e.preventDefault();
-    //         const formData = new FormData(e.target);
-    //         fetch(`/doctors/api/doctors/${doctorId}/update/`, {
-    //             method: 'POST',
-    //             body: formData,
-    //             headers: {
-    //                 'X-CSRFToken': csrftoken
-    //             }
-    //         })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             if (data.status === 'success') {
-    //                 loadDoctorData();
-    //             } else {
-    //                 alert('Failed to update doctor information. Please try again.');
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Error:', error);
-    //             alert('An error occurred while updating doctor information.');
-    //         });
-    //     }
-    // });
 });
