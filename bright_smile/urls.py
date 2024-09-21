@@ -23,13 +23,15 @@ from . import views
 from django.conf.urls import handler404
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.views import serve
+from django.contrib.auth.decorators import login_required
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda request: redirect('clinics/')),
-    # path('', include('clinics.urls')),
-    path('clinics/', include('clinics.urls')),
-    path('doctors/', include('doctors.urls')),
-    path('patients/', include('patients.urls')),
+    path('', login_required(lambda request: redirect('clinics/')), name='home'),
+    path('clinics/', include('clinics.urls')),  
+    path('doctors/', include('doctors.urls')),  
+    path('patients/', include('patients.urls')),  
+    path('members/', include('members.urls')),
 ]
 # if settings.DEBUG:
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

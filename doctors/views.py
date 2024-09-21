@@ -3,14 +3,19 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Doctor, DoctorClinicAffiliation, PatientDoctorAffiliation, DoctorProcedure
 from procedures.models import Procedure
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def doctor_list(request):
     return render(request, 'doctors/doctor_list.html')
 
+@login_required
 @ensure_csrf_cookie
 def doctor_detail(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
     return render(request, 'doctors/doctor_detail.html', {'doctor': doctor})
 
+@login_required
 def get_doctors(request):
     doctors = Doctor.objects.all()
     data = [{
@@ -24,6 +29,7 @@ def get_doctors(request):
     # print(data)
     return JsonResponse(data, safe=False)
 # working final version
+@login_required
 @ensure_csrf_cookie
 def get_doctor_detail(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
@@ -52,6 +58,7 @@ def get_doctor_detail(request, doctor_id):
     # print(data)
     return JsonResponse(data)
 
+@login_required
 def update_doctor(request, doctor_id):
     if request.method == 'POST':
         doctor = get_object_or_404(Doctor, id=doctor_id)

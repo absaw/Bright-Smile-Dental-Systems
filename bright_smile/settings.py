@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'patients',
     'appointments',
     'procedures',
-    'schedules'
+    'schedules',
+    'members'
 ]
 
 MIDDLEWARE = [
@@ -154,3 +155,6 @@ STATICFILES_FINDERS = [
 ]
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'

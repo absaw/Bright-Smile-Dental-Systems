@@ -5,16 +5,20 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Patient
 from appointments.models import Appointment,Visit, VisitProcedure
 from schedules.models import TimeSlot
+from django.contrib.auth.decorators import login_required
 
+@login_required
 @ensure_csrf_cookie
 def patient_list(request):
     return render(request, 'patients/patient_list.html')
 
+@login_required
 @ensure_csrf_cookie
 def patient_detail(request, patient_id):
     patient = get_object_or_404(Patient, id=patient_id)
     return render(request, 'patients/patient_detail.html', {'patient': patient})
 
+@login_required
 def get_patients(request):
     patients = Patient.objects.all()
     data = []
@@ -40,6 +44,7 @@ def get_patients(request):
     
     return JsonResponse(data, safe=False)
 
+@login_required
 def get_patient_detail(request, patient_id):
     patient = get_object_or_404(Patient, id=patient_id)
     visits = Visit.objects.filter(patient=patient).order_by('-time_slot__date', '-time_slot__start_time')
@@ -68,6 +73,7 @@ def get_patient_detail(request, patient_id):
     
     return JsonResponse(data)
 
+@login_required
 def update_patient(request, patient_id):
     if request.method == 'POST':
         patient = get_object_or_404(Patient, id=patient_id)
