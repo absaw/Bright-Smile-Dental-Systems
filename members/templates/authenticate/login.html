@@ -23,8 +23,12 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-xl-10 col-lg-12 col-md-9">
+                <div class="sidebar-brand-icon rotate-n-15"></div>
+                    <!-- <i class="fas fa-laugh-wink"></i> -->
+                <!-- </div> -->
                 <div class="text-center mb-4">
-                    <h1 class="h2 text-gray-900 mt-4">Bright Smile Dental Care</h1>
+                    
+                    <h1 class="h2 text-gray-900 mt-4"><i class="fas fa-smile"></i>  Bright Smile Dental Care</h1>
                 </div>
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
@@ -33,7 +37,7 @@
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Welcome</h1>
                                     </div>
                                     <form class="user" method="POST">
                                         {% csrf_token %}
@@ -49,7 +53,7 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="{% url 'register_user' %}">Create an Account!</a>
+                                        <a class="small" href="{% url 'register_user' %}">New here? Create an Account</a>
                                     </div>
                                 </div>
                             </div>

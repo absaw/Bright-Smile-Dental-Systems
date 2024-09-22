@@ -14,4 +14,5 @@ urlpatterns = [
     path('api/doctors/available/', views.get_available_doctors, name='get_available_doctors'),
     path('api/doctors/add-affiliation/', views.add_doctor_affiliation, name='add_doctor_affiliation'),
     path('api/doctors/<int:doctor_id>/update-affiliation/', views.update_doctor_affiliation, name='update_doctor_affiliation'),
+    path('api/clinics/by-procedure/<int:procedure_id>/', views.clinics_by_procedure, name='clinics_by_procedure'),
 ]

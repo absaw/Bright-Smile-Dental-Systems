@@ -99,7 +99,14 @@ def add_doctor_affiliation(request):
             affiliation.office_address = office_address
             affiliation.working_schedule = working_schedule
             affiliation.save()
-
+        
+        # Update ClinicProcedure table
+        doctor_procedures = DoctorProcedure.objects.filter(doctor=doctor)
+        for doctor_procedure in doctor_procedures:
+            ClinicProcedure.objects.get_or_create(
+                clinic=clinic,
+                procedure=doctor_procedure.procedure
+            )
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
 
@@ -119,3 +126,9 @@ def update_doctor_affiliation(request, doctor_id):
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
 
+@login_required
+def clinics_by_procedure(request, procedure_id):
+    clinic_procedures = ClinicProcedure.objects.filter(procedure_id=procedure_id).select_related('clinic')
+    clinics = [{'id': cp.clinic.id, 'name': cp.clinic.name} for cp in clinic_procedures]
+    # print('clinics::',clinics) #verified
+    return JsonResponse(clinics, safe=False)

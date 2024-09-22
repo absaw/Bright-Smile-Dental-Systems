@@ -3,8 +3,8 @@ from .models import Doctor, DoctorClinicAffiliation, PatientDoctorAffiliation, D
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'npi', 'email', 'phone_number')
-    search_fields = ('name', 'npi', 'email')
+    list_display = ('id','name', 'npi', 'email', 'phone_number')
+    search_fields = ('id','name', 'npi', 'email')
 
 @admin.register(DoctorClinicAffiliation)
 class DoctorClinicAffiliationAdmin(admin.ModelAdmin):

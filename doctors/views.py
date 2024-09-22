@@ -83,6 +83,12 @@ def update_doctor(request, doctor_id):
         
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def doctors_by_procedure_and_clinic(request, procedure_id, clinic_id):
+    doctor_procedures = DoctorProcedure.objects.filter(procedure_id=procedure_id, doctor__doctorclinicaffiliation__clinic_id=clinic_id).select_related('doctor')
+    doctors = [{'id': dp.doctor.id, 'name': dp.doctor.name} for dp in doctor_procedures]
+    return JsonResponse(doctors, safe=False)
 # @ensure_csrf_cookie
 # working
 # def get_doctor_detail(request, doctor_id):

@@ -1,6 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     const patientId = window.location.pathname.split('/')[2];
-    
+    // const addVisitBtn = document.getElementById('add-visit-patient-btn');
+    // console.log("Add Visit button:", addVisitBtn);
+
+    // if (addVisitBtn) {
+    //     addVisitBtn.addEventListener('click', function() {
+    //         console.log("Add Visit button clicked");
+    //         // ... rest of the function
+    //     });
+    // } else {
+    //     console.error("Add Visit button not found");
+    // }
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -21,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/patients/api/patients/${patientId}/`)
             .then(response => response.json())
             .then(data => {
-                // window.alert(JSON.stringify(data));
+                console.log("Load patient data fn. called");
                 const patientInfoTable = document.querySelector('#patient-info table tbody');
                 patientInfoTable.innerHTML = `
                     <tr><th>Name:</th><td>${data.name}</td></tr>
@@ -31,8 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <tr><th>SSN (last 4 digits):</th><td>${data.ssn_last_4}</td></tr>
                     <tr><th>Gender:</th><td>${data.gender === 'M' ? 'Male' : data.gender === 'F' ? 'Female' : 'Other'}</td></tr>
                 `;
-// Display next appointment
-                displayNextAppointment(data.next_appointment);
+    
                 // Initialize visits table
                 if ($.fn.DataTable.isDataTable('#visitsTable')) {
                     $('#visitsTable').DataTable().destroy();
@@ -64,14 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     loadPatientData();
-   
-
 
     document.getElementById('edit-patient-btn').addEventListener('click', function() {
         fetch(`/patients/api/patients/${patientId}/`)
             .then(response => response.json())
             .then(data => {
-                window.alert(JSON.stringify(data));
                 const form = document.getElementById('edit-patient-form');
                 form.innerHTML = `
                     <div class="form-group">
@@ -179,8 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Populate doctors, clinics, and procedures
         fetchDoctors();
         fetchClinics();
-        fetchProceduresForVisit();
-        // fetchProcedures();
+        fetchProcedures();
         
         $('#addVisitModal').modal('show');
     });
@@ -247,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         // Populate procedures
-        fetchProceduresForAppointment();
+        fetchProcedures();
         
         // Add event listeners for real-time validation
         document.getElementById('appointment-procedure').addEventListener('change', updateClinicOptions);
@@ -309,43 +314,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // function fetchProcedures() {
-    //     fetch('/procedures/api/procedures/')
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             window.alert(JSON.stringify(data));
-    //             const visitSelect = document.getElementById('visit-procedures');
-    //             const appointmentSelect = document.getElementById('appointment-procedure');
-    //             const options = data.map(procedure => `<option value="${procedure.id}">${procedure.name}</option>`).join('');
-    //             visitSelect.innerHTML = options;
-    //             appointmentSelect.innerHTML = options;
-    //         });
-    // }
-    function fetchProceduresForVisit() {
+    function fetchProcedures() {
         fetch('/procedures/api/procedures/')
             .then(response => response.json())
             .then(data => {
                 const visitSelect = document.getElementById('visit-procedures');
-                const options = data.map(procedure => `<option value="${procedure.id}">${procedure.name}</option>`).join('');
-                visitSelect.innerHTML = options;
-            })
-            .catch(error => {
-                console.error('Error fetching procedures for visit:', error);
-            });
-    }
-    
-    function fetchProceduresForAppointment() {
-        fetch('/procedures/api/procedures/')
-            .then(response => response.json())
-            .then(data => {
-                // window.alert(JSON.stringify(data));
-
                 const appointmentSelect = document.getElementById('appointment-procedure');
                 const options = data.map(procedure => `<option value="${procedure.id}">${procedure.name}</option>`).join('');
-                appointmentSelect.innerHTML = '<option value="">Select a procedure</option>' + options;
-            })
-            .catch(error => {
-                console.error('Error fetching procedures for appointment:', error);
+                visitSelect.innerHTML = options;
+                appointmentSelect.innerHTML = options;
             });
     }
 
@@ -354,11 +331,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/clinics/api/clinics/by-procedure/${procedureId}/`)
             .then(response => response.json())
             .then(data => {
-                // window.alert(JSON.stringify(data));
-
-                const clinic_select = document.getElementById('appointment-clinic');
-                const options = data.map(clinic => `<option value="${clinic.id}">${clinic.name}</option>`).join('');
-                clinic_select.innerHTML = '<option value="">Select a Clinic</option>' + options;
+                const select = document.getElementById('appointment-clinic');
+                select.innerHTML = data.map(clinic => `<option value="${clinic.id}">${clinic.name}</option>`).join('');
                 updateDoctorOptions();
             });
     }
@@ -381,14 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 const select = document.getElementById('appointment-doctor');
-                let options;
                 if (data.length > 0) {
-                    options = data.map(doctor => `<option value="${doctor.id}">${doctor.name}</option>`).join('');
+                    select.innerHTML = data.map(doctor => `<option value="${doctor.id}">${doctor.name}</option>`).join('');
                 } else {
-                    options = '<option value="">No doctors available</option>';
+                    select.innerHTML = '<option value="">No doctors available</option>';
                 }
-                select.innerHTML = '<option value="">Select a Doctor</option>' + options;
-                // updateAvailableTimeSlots();
+                updateAvailableTimeSlots();
             })
             .catch(error => {
                 console.error('Error updating doctor options:', error);
@@ -447,6 +419,47 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    
+    // Update the loadPatientData function to include next appointment
+    function loadPatientData() {
+        fetch(`/patients/api/patients/${patientId}/`)
+            .then(response => response.json())
+            .then(data => {
+                // ... (keep existing patient info population)
+
+                // Display next appointment
+                displayNextAppointment(data.next_appointment);
+
+                // Initialize visits table
+                if ($.fn.DataTable.isDataTable('#visitsTable')) {
+                    $('#visitsTable').DataTable().destroy();
+                }
+
+                $('#visitsTable').DataTable({
+                    data: data.visits,
+                    columns: [
+                        { data: 'date_time' },
+                        { data: 'doctor_name' },
+                        { data: 'clinic_name' },
+                        { data: 'procedures' },
+                        { data: 'doctor_notes' }
+                    ],
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50],
+                    order: [[0, 'desc']],
+                    language: {
+                        search: "",
+                        searchPlaceholder: "Search..."
+                    },
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load patient details. Please try again.');
+            });
+    }
+
+    // Call loadPatientData on page load
+    loadPatientData();
 
 });

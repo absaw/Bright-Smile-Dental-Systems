@@ -1,20 +1,25 @@
 from django.contrib import admin
-from .models import Visit, Appointment, VisitProcedure
+from .models import Visit, Appointment, VisitProcedure, AppointmentProcedure
+
+class VisitProcedureInline(admin.TabularInline):
+    model = VisitProcedure
+    extra = 1
+
+class AppointmentProcedureInline(admin.TabularInline):
+    model = AppointmentProcedure
+    extra = 1
 
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
     list_display = ('patient', 'doctor', 'clinic', 'time_slot')
-    list_filter = ('clinic', 'doctor')
-    search_fields = ('patient__name', 'doctor__name', 'clinic__name')
+    list_filter = ('doctor', 'clinic')
+    inlines = [VisitProcedureInline]
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'doctor', 'clinic', 'procedure', 'time_slot', 'date_booked')
-    list_filter = ('clinic', 'doctor', 'procedure')
-    search_fields = ('patient__name', 'doctor__name', 'clinic__name')
+    list_display = ('patient', 'doctor', 'clinic', 'time_slot', 'procedures')
+    list_filter = ('doctor', 'clinic')
+    inlines = [AppointmentProcedureInline]
 
-@admin.register(VisitProcedure)
-class VisitProcedureAdmin(admin.ModelAdmin):
-    list_display = ('visit', 'procedure')
-    list_filter = ('procedure',)
-    search_fields = ('visit__patient__name', 'procedure__name')
+    def procedures(self, obj):
+        return obj.procedures()
