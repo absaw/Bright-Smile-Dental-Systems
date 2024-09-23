@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from .models import Clinic,ClinicProcedure
 from doctors.models import Doctor, DoctorClinicAffiliation, DoctorProcedure
 from procedures.models import Procedure
-# Create your views here.
+from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
 
@@ -133,3 +133,21 @@ def clinics_by_procedure(request, procedure_id):
     clinics = [{'id': cp.clinic.id, 'name': cp.clinic.name} for cp in clinic_procedures]
     # print('clinics::',clinics) #verified
     return JsonResponse(clinics, safe=False)
+
+
+@login_required
+@require_POST
+@ensure_csrf_cookie
+def add_clinic(request):
+    try:
+        clinic = Clinic.objects.create(
+            name=request.POST.get('name'),
+            address=request.POST.get('address'),
+            city=request.POST.get('city'),
+            state=request.POST.get('state'),
+            phone_number=request.POST.get('phone_number'),
+            email=request.POST.get('email')
+        )
+        return JsonResponse({'status': 'success', 'id': clinic.id})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
