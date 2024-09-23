@@ -11,14 +11,18 @@ class AppointmentProcedureInline(admin.TabularInline):
 
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'doctor', 'clinic', 'time_slot')
-    list_filter = ('doctor', 'clinic')
+    list_display = ('patient', 'doctor', 'clinic', 'date', 'time')
+    list_filter = ('doctor', 'clinic', 'date')
+    search_fields = ('patient__name', 'doctor__name', 'clinic__name')
+    date_hierarchy = 'date'
     inlines = [VisitProcedureInline]
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'doctor', 'clinic', 'time_slot', 'procedures')
-    list_filter = ('doctor', 'clinic')
+    list_display = ('patient', 'doctor', 'clinic', 'date', 'time', 'procedures', 'date_booked')
+    list_filter = ('doctor', 'clinic', 'date')
+    search_fields = ('patient__name', 'doctor__name', 'clinic__name')
+    date_hierarchy = 'date'
     inlines = [AppointmentProcedureInline]
 
     def procedures(self, obj):

@@ -1,3 +1,269 @@
 # Bright-Smile-Dental-Systems
 
-Aim is to create a platform where Bright Smile Dental Systems administrative “Users” can efficiently manage these entities and related tasks, such as scheduling appointments and tracking visits.
+Bright Smile Dental Systems is a comprehensive patient and provider management platform for dental clinics. This system allows administrative employees to efficiently manage clinics, doctors, patients, and appointments across multiple locations.
+
+Its a platform where Bright Smile Dental Systems administrative “Users” can efficiently manage these entities and related tasks, such as scheduling appointments and tracking visits.
+
+## Table of Contents
+
+1. [Features](#features)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Database Setup](#database-setup)
+5. [Running the Application](#running-the-application)
+6. [Using the Platform](#using-the-platform)
+7. [API Endpoints](#api-endpoints)
+8. [Assumptions and Configurations](#assumptions-and-configurations)
+
+## Features
+
+- User authentication and authorization
+- Management of clinics, doctors, and patients
+- Appointment scheduling and tracking
+- Visit history and procedure tracking
+- REST APIs for external system integration
+
+## Prerequisites
+
+- Python 3.8 or higher
+- PostgreSQL 12 or higher
+- pip (Python package manager)
+- virtualenv
+
+## Installation
+
+1. Clone the repository:
+
+   ```
+
+   git clone https://github.com/absaw/Bright-Smile-Dental-Systems.git
+   cd bright-smile-dental-systems
+   ```
+2. Create a virtual environment:
+
+   ```
+   python -m venv venv
+   ```
+3. Activate the virtual environment:
+
+   - On Windows:
+     ```
+     venv\Scripts\activate
+     ```
+   - On macOS and Linux:
+     ```
+     source venv/bin/activate
+     ```
+4. Install the required packages:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+   Note: If `requirements.txt` is not present, you can create it by running:
+
+   ```
+   pip freeze > requirements.txt
+   ```
+
+
+3. Update the database configuration in `bright_smile/settings.py`:
+
+   ```python
+   DATABASES = {
+       'default': {
+           'ENGINE': 'django.db.backends.postgresql',
+           'NAME': 'bright_smile_dental',
+           'USER': 'your_postgres_username',
+           'PASSWORD': 'your_postgres_password',
+           'HOST': 'localhost',
+           'PORT': '5432',
+       }
+   }
+   ```
+4. Run migrations:
+
+   ```
+   python manage.py migrate
+   ```
+5. Create a superuser:
+
+   ```
+   python manage.py createsuperuser
+   ```
+
+6. Populating the Database
+
+After setting up your database schema, you can populate it with sample data using the provided script. Follow these steps:
+
+1. Ensure you've completed the database setup steps mentioned earlier.
+2. Run the population script using the Django shell:
+
+   ```
+   python manage.py shell < populate_database.py
+   ```
+
+This script will create:
+
+- 5 clinics in the New Brunswick, NJ area
+- 10 doctors with valid NPIs
+- 10 patients
+- 5 dental procedures
+- Sample appointments and visits
+
+The data is consistent across all models and provides a good starting point for testing the application.
+
+## Running the Application
+
+1. Collecting static files
+
+   ```
+   python manage.py collectstatic --noinput
+   ```
+2. Start the development server:
+
+```
+   python manage.py runserver --insecure
+```
+
+2. Open a web browser and navigate to `http://localhost:8000`
+3. Log in using the superuser credentials you created earlier.
+
+## Using the Platform
+
+1. **Clinics Management**:
+
+   - View and manage clinics from the Clinics tab
+   - Add new clinics or edit existing ones
+   - View doctors and patients affiliated with each clinic
+   - Add doctor affiliations to the clinic
+   - Edit doctor notes and working schedule
+2. **Doctors Management**:
+
+   - View and manage doctors from the Doctors tab
+   - Add new doctors or edit existing ones
+   - Manage doctor specialties and clinic affiliations
+3. **Patients Management**:
+
+   - View and manage patients from the Patients tab
+   - Add new patients or edit existing ones
+   - View patient visit history and schedule appointments
+   - **Appointments**:
+     - Schedule new appointments for patients, based on procedure, clinic and doctor preference and available time slots
+     - View and manage existing appointments
+   - **Visits**:
+   - Record new visits for patients
+   - View and manage visit history
+
+## API Endpoints
+
+The following REST API endpoints are available:
+
+## API Endpoints
+
+The following REST API endpoints are available:
+
+1. **Add Patient**: `POST /patients/api/patients/`
+
+   - Add a new patient to the system.
+2. **Add Doctor**: `POST /doctors/api/doctors/`
+
+   - Add a new doctor to the system.
+3. **Get Clinics**: `GET /clinics/api/clinics/`
+
+   - Retrieve a list of all clinics.
+4. **Get Clinic Information**: `GET /clinics/api/clinics/<clinic_id>/`
+
+   - Retrieve detailed information about a specific clinic.
+5. **Update Clinic**: `PUT /clinics/api/clinics/<clinic_id>/update/`
+
+   - Update information for a specific clinic.
+6. **Get Available Doctors**: `GET /clinics/api/doctors/available/`
+
+   - Retrieve a list of available doctors.
+7. **Add Doctor Affiliation**: `POST /clinics/api/doctors/add-affiliation/`
+
+   - Add a new affiliation between a doctor and a clinic.
+8. **Update Doctor Affiliation**: `PUT /clinics/api/doctors/<doctor_id>/update-affiliation/`
+
+   - Update the affiliation details for a specific doctor.
+9. **Get Clinics by Procedure**: `GET /clinics/api/clinics/by-procedure/<procedure_id>/`
+
+   - Retrieve a list of clinics that offer a specific procedure.
+10. **Get Available Time Slots**: `GET /appointments/api/available-time-slots/`
+
+    - Retrieve available time slots for appointments.
+11. **Book Appointment**: `POST /appointments/api/book/`
+
+    - Book a new appointment.
+12. **Get Patients**: `GET /patients/api/patients/`
+
+    - Retrieve a list of all patients.
+13. **Get Patient Detail**: `GET /patients/api/patients/<patient_id>/`
+
+    - Retrieve detailed information about a specific patient.
+14. **Update Patient**: `PUT /patients/api/patients/<patient_id>/update/`
+
+    - Update information for a specific patient.
+15. **Add Visit**: `POST /patients/api/visits/add/`
+
+    - Add a new visit record for a patient.
+
+## Assumptions and Configurations
+
+1. The system assumes a single time zone (UTC) for all operations. Adjust the `TIME_ZONE` setting in `settings.py` if needed.
+2. Appointments are scheduled in 1-hour slots.
+3. The system uses Django's built-in authentication system.
+4. Static files are served using Django's `staticfiles` app in development. For production, configure a proper static file serving solution.
+
+## Site Demo
+
+Video :
+
+/Bright Smile Dental Care Site Demo.mp4
+
+## Screenshots
+
+#### LOGIN
+
+![1727064614525](image/README/1727064614525.png)
+
+#### REGISTER USER
+
+![1727064792936](image/README/1727064792936.png)
+
+#### CLINICS PAGE
+
+![1727064335106](image/README/1727064335106.png)
+
+#### CLINICS DETAILS PAGE
+
+![1727064386711](image/README/1727064386711.png)
+
+#### DOCTORS LIST PAGE
+
+![1727064470630](image/README/1727064470630.png)
+
+#### DOCTORS DETAILS PAGE
+
+![1727064525787](image/README/1727064525787.png)
+
+![1727064543960](image/README/1727064543960.png)
+
+#### PATIENT LIST PAGE
+
+![1727064847099](image/README/1727064847099.png)
+
+#### PATIENT DETAILS PAGE
+
+![1727064874101](image/README/1727064874101.png)
+
+![1727064887629](image/README/1727064887629.png)
+
+![1727064912435](image/README/1727064912435.png)
+
+![1727064947209](image/README/1727064947209.png)
+
+## License
+
+This project is licensed under the MIT License.

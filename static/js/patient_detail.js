@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/patients/api/patients/${patientId}/`)
             .then(response => response.json())
             .then(data => {
-                window.alert(JSON.stringify(data));
+                // window.alert(JSON.stringify(data));
                 const form = document.getElementById('edit-patient-form');
                 form.innerHTML = `
                     <div class="form-group">
@@ -256,39 +256,85 @@ document.addEventListener('DOMContentLoaded', function() {
         
         $('#bookAppointmentModal').modal('show');
     });
+// Modify the save-appointment-btn event listener
+document.getElementById('save-appointment-btn').addEventListener('click', function() {
+    const form = document.getElementById('book-appointment-form');
+    
+    if (form.checkValidity() === false) {
+        form.reportValidity();
+        return;
+    }
 
-    document.getElementById('save-appointment-btn').addEventListener('click', function() {
-        const form = document.getElementById('book-appointment-form');
-        
-        if (form.checkValidity() === false) {
-            form.reportValidity();
-            return;
+    const formData = new FormData(form);
+    formData.append('patient_id', patientId);
+
+    // Adjust field names to match backend expectations
+    formData.set('doctor_id', formData.get('appointment-doctor'));
+    formData.set('clinic_id', formData.get('appointment-clinic'));
+    formData.set('procedure_id', formData.get('appointment-procedure'));
+    formData.set('date', formData.get('appointment-date'));
+    formData.set('time', formData.get('appointment-time'));
+
+    // Remove the original form fields
+    formData.delete('appointment-doctor');
+    formData.delete('appointment-clinic');
+    formData.delete('appointment-procedure');
+    formData.delete('appointment-date');
+    formData.delete('appointment-time');
+
+    fetch('/appointments/api/book/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrftoken
         }
-
-        const formData = new FormData(form);
-        formData.append('patient_id', patientId);
-
-        fetch('/patients/api/appointments/book/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': csrftoken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                $('#bookAppointmentModal').modal('hide');
-                loadPatientData();
-            } else {
-                alert('Failed to book appointment. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while booking the appointment.');
-        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            $('#bookAppointmentModal').modal('hide');
+            loadPatientData();
+        } else {
+            alert('Failed to book appointment. ' + (data.message || 'Please try again.'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while booking the appointment.');
     });
+});
+    // document.getElementById('save-appointment-btn').addEventListener('click', function() {
+    //     const form = document.getElementById('book-appointment-form');
+        
+    //     if (form.checkValidity() === false) {
+    //         form.reportValidity();
+    //         return;
+    //     }
+
+    //     const formData = new FormData(form);
+    //     formData.append('patient_id', patientId);
+
+    //     fetch('/patients/api/appointments/book/', {
+    //         method: 'POST',
+    //         body: formData,
+    //         headers: {
+    //             'X-CSRFToken': csrftoken
+    //         }
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.status === 'success') {
+    //             $('#bookAppointmentModal').modal('hide');
+    //             loadPatientData();
+    //         } else {
+    //             alert('Failed to book appointment. Please try again.');
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //         alert('An error occurred while booking the appointment.');
+    //     });
+    // });
 
     // Helper functions for fetching data and updating options
     function fetchDoctors() {
@@ -447,6 +493,155 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // =====================
+// Modify the book-appointment-btn event listener
+document.getElementById('book-appointment-btn').addEventListener('click', function() {
+    const form = document.getElementById('book-appointment-form');
+    form.innerHTML = `
+        <div class="form-group">
+            <label for="appointment-procedure">Procedure</label>
+            <select class="form-control" id="appointment-procedure" name="appointment-procedure" required>
+                <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="appointment-clinic">Clinic</label>
+            <select class="form-control" id="appointment-clinic" name="appointment-clinic" required>
+                <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="appointment-doctor">Doctor</label>
+            <select class="form-control" id="appointment-doctor" name="appointment-doctor" required>
+                <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="appointment-date">Date</label>
+            <input type="date" class="form-control" id="appointment-date" name="appointment-date" required>
+        </div>
+        <div class="form-group">
+            <label for="appointment-time">Time</label>
+            <select class="form-control" id="appointment-time" name="appointment-time" required>
+                <option value="">Select a time</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+    `;
     
+    // Populate procedures
+    fetchProceduresForAppointment();
+    
+    // Add event listeners for real-time validation
+    document.getElementById('appointment-procedure').addEventListener('change', updateClinicOptions);
+    document.getElementById('appointment-clinic').addEventListener('change', updateDoctorOptions);
+    document.getElementById('appointment-doctor').addEventListener('change', enableDateSelection);
+    document.getElementById('appointment-date').addEventListener('change', updateTimeSlots);
+    
+    $('#bookAppointmentModal').modal('show');
+});
+
+// Add new function to enable date selection
+function enableDateSelection() {
+    const dateInput = document.getElementById('appointment-date');
+    dateInput.disabled = false;
+    
+    // Set min date to today and max date to 3 months from now
+    const today = new Date().toISOString().split('T')[0];
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+    dateInput.min = today;
+    dateInput.max = threeMonthsLater.toISOString().split('T')[0];
+}
+
+// Add new function to update time slots
+function updateTimeSlots() {
+    const doctorId = document.getElementById('appointment-doctor').value;
+    const clinicId = document.getElementById('appointment-clinic').value;
+    const date = document.getElementById('appointment-date').value;
+    const timeSelect = document.getElementById('appointment-time');
+
+    if (!doctorId || !clinicId || !date) {
+        console.log('Doctor, clinic, or date not selected');
+        return;
+    }
+
+    // Generate all time slots from 9 AM to 6 PM
+    const allTimeSlots = [];
+    for (let hour = 9; hour < 18; hour++) {
+        allTimeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+    }
+
+    // Fetch available time slots from the server
+    fetch(`/appointments/api/available-time-slots/?doctor_id=${doctorId}&clinic_id=${clinicId}&date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing options
+            timeSelect.innerHTML = '<option value="">Select a time</option>';
+            
+            // Add new options
+            allTimeSlots.forEach(slot => {
+                const option = document.createElement('option');
+                option.value = slot;
+                option.textContent = slot;
+                if (!data.includes(slot)) {
+                    option.disabled = true;
+                }
+                timeSelect.appendChild(option);
+            });
+
+            timeSelect.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error fetching time slots:', error);
+            timeSelect.innerHTML = '<option value="">Error loading time slots</option>';
+            timeSelect.disabled = true;
+        });
+}
+    // Add new function to update time slots
+    function updateTimeSlots() {
+        const doctorId = document.getElementById('appointment-doctor').value;
+        const clinicId = document.getElementById('appointment-clinic').value;
+        const date = document.getElementById('appointment-date').value;
+        const timeSelect = document.getElementById('appointment-time');
+
+        if (!doctorId || !clinicId || !date) {
+            console.log('Doctor, clinic, or date not selected');
+            return;
+        }
+
+        // Generate all time slots from 9 AM to 6 PM
+        const allTimeSlots = [];
+        for (let hour = 9; hour < 18; hour++) {
+            allTimeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+        }
+
+        // Fetch available time slots from the server
+        fetch(`/appointments/api/available-time-slots/?doctor_id=${doctorId}&clinic_id=${clinicId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear existing options
+                timeSelect.innerHTML = '<option value="">Select a time</option>';
+                
+                // Add new options
+                allTimeSlots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    if (!data.includes(slot)) {
+                        option.disabled = true;
+                    }
+                    timeSelect.appendChild(option);
+                });
+
+                timeSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching time slots:', error);
+                timeSelect.innerHTML = '<option value="">Error loading time slots</option>';
+                timeSelect.disabled = true;
+            });
+    }
+
 
 });
