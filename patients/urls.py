@@ -8,6 +8,8 @@ urlpatterns = [
     path('api/patients/<int:patient_id>/', views.get_patient_detail, name='get_patient_detail'),
     path('api/patients/<int:patient_id>/update/', views.update_patient, name='update_patient'),
     path('api/visits/add/', views.add_visit, name='add_visit'),
+    path('api/add_patient/', views.add_patient, name='add_patient'),  # New URL pattern for adding a patient
+
     # path('api/appointments/book/', views.book_appointment, name='book_appointment'),
     # path('api/time-slots/available/<int:doctor_id>/<int:clinic_id>/', views.get_available_time_slots, name='get_available_time_slots'),
 

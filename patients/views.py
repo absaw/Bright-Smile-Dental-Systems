@@ -129,3 +129,21 @@ def add_visit(request):
             VisitProcedure.objects.create(visit=visit, procedure=procedure)
         
         return JsonResponse({'status': 'success'})
+    
+    
+    
+@login_required
+@require_POST
+def add_patient(request):
+    try:
+        patient = Patient.objects.create(
+            name=request.POST.get('name'),
+            address=request.POST.get('address'),
+            phone_number=request.POST.get('phone_number'),
+            date_of_birth=request.POST.get('date_of_birth'),
+            ssn_last_4=request.POST.get('ssn_last_4'),
+            gender=request.POST.get('gender')
+        )
+        return JsonResponse({'status': 'success', 'message': 'Patient added successfully'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
