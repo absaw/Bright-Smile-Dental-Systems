@@ -4,6 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Doctor, DoctorClinicAffiliation, PatientDoctorAffiliation, DoctorProcedure
 from procedures.models import Procedure
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 
 @login_required
 def doctor_list(request):
@@ -89,6 +90,42 @@ def doctors_by_procedure_and_clinic(request, procedure_id, clinic_id):
     doctor_procedures = DoctorProcedure.objects.filter(procedure_id=procedure_id, doctor__doctorclinicaffiliation__clinic_id=clinic_id).select_related('doctor')
     doctors = [{'id': dp.doctor.id, 'name': dp.doctor.name} for dp in doctor_procedures]
     return JsonResponse(doctors, safe=False)
+
+
+
+    
+@login_required
+@require_http_methods(["POST"])
+def add_doctor(request):
+    try:
+        data = request.POST
+        new_doctor = Doctor.objects.create(
+            npi=data['npi'],
+            name=data['name'],
+            email=data['email'],
+            phone_number=data['phone_number']
+        )
+        
+        specialties = data.getlist('specialties')
+        for specialty_id in specialties:
+            DoctorProcedure.objects.create(doctor=new_doctor, procedure_id=specialty_id)
+        
+        return JsonResponse({'status': 'success', 'message': 'Doctor added successfully'})
+    except Exception as e:
+        print(e)
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+# @login_required
+# @require_http_methods(["GET"])
+# def get_procedures(request):
+#     procedures = Procedure.objects.all().values('id', 'name')
+#     return JsonResponse(list(procedures), safe=False)
+
+
+
+
+
+
 # @ensure_csrf_cookie
 # working
 # def get_doctor_detail(request, doctor_id):

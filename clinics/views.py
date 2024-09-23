@@ -6,7 +6,7 @@ from procedures.models import Procedure
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.http import require_http_methods
 @login_required
 def clinic_list(request):
     return render(request, 'clinics/clinic_list.html')
@@ -151,3 +151,4 @@ def add_clinic(request):
         return JsonResponse({'status': 'success', 'id': clinic.id})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
