@@ -21,12 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/clinics/api/clinics/${clinicId}/`)
             .then(response => response.json())
             .then(data => {
+                // window.alert(JSON.stringify(data));
+
                 const clinicInfoTable = document.querySelector('#clinic-info table tbody');
                 clinicInfoTable.innerHTML = `
                     <tr><th>Name:</th><td>${data.name}</td></tr>
                     <tr><th>Address:</th><td>${data.address}</td></tr>
                     <tr><th>Phone Number:</th><td>${data.phone_number}</td></tr>
                     <tr><th>Email:</th><td>${data.email}</td></tr>
+                    <tr><th>Procedures:</th><td>${data.procedures.map(proc => proc.name).join(', ')}</td></tr>
                 `;
 
                 if ($.fn.DataTable.isDataTable('#doctorsTable')) {
@@ -126,16 +129,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    $('#doctorsTable').on('click', '.edit-doctor', function() {
-        const doctorId = $(this).data('id');
-        const row = $(this).closest('tr');
-        const office_address = row.find('td:eq(1)').text();
-        const working_schedule = row.find('td:eq(2)').text();
+    // $('#doctorsTable').on('click', '.edit-doctor', function() {
+    //     const doctorId = $(this).data('id');
+    //     const row = $(this).closest('tr');
+    //     const office_address = row.find('td:eq(1)').text();
+    //     const working_schedule = row.find('td:eq(2)').text();
 
-        // Implement edit doctor functionality here
-        // You can create a new modal for editing doctor affiliation or use an inline edit
-        console.log(`Edit doctor ${doctorId} affiliation`);
-    });
+    //     // Implement edit doctor functionality here
+    //     // You can create a new modal for editing doctor affiliation or use an inline edit
+    //     console.log(`Edit doctor ${doctorId} affiliation`);
+    // });
 
     document.getElementById('add-doctor-btn').addEventListener('click', function() {
         fetch(`/clinics/api/doctors/available/?clinic_id=${clinicId}`)
@@ -189,4 +192,57 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('An error occurred while adding doctor affiliation.');
         });
     });
+// =======================
+
+    $('#doctorsTable').on('click', '.edit-doctor', function() {
+        const doctorId = $(this).data('id');
+        const row = $(this).closest('tr');
+        const doctorName = row.find('td:eq(0)').text();
+        const office_address = row.find('td:eq(1)').text();
+        const working_schedule = row.find('td:eq(2)').text();
+
+        // Populate the edit doctor modal
+        $('#editDoctorModal').find('.modal-title').text(`Edit Affiliation: ${doctorName}`);
+        $('#edit-doctor-form #doctor_id').val(doctorId);
+        $('#edit-doctor-form #office_address').val(office_address);
+        $('#edit-doctor-form #working_schedule').val(working_schedule);
+
+        $('#editDoctorModal').modal('show');
+    });
+
+    document.getElementById('save-edit-doctor-btn').addEventListener('click', function() {
+        const form = document.getElementById('edit-doctor-form');
+        
+        if (form.checkValidity() === false) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+        formData.append('clinic_id', clinicId);
+
+        const doctorId = formData.get('doctor_id');
+
+        fetch(`/clinics/api/doctors/${doctorId}/update-affiliation/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                $('#editDoctorModal').modal('hide');
+                loadClinicData();
+            } else {
+                alert('Failed to update doctor affiliation. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating doctor affiliation.');
+        });
+    });
+
 });

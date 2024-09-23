@@ -15,7 +15,7 @@ def clinic_list(request):
 @ensure_csrf_cookie
 def clinic_detail(request, clinic_id):
     clinic = get_object_or_404(Clinic, id=clinic_id)
-    print(clinic)
+    # print(clinic)
     return render(request, 'clinics/clinic_detail.html', {'clinic': clinic})
 
 @login_required
@@ -37,7 +37,7 @@ def get_clinics(request):
 def get_clinic_detail(request, clinic_id):
     clinic = get_object_or_404(Clinic, id=clinic_id)
     doctor_affiliations = DoctorClinicAffiliation.objects.filter(clinic=clinic).select_related('doctor')
-    # clinic_procedures = ClinicProcedure.objects.filter(clinic=clinic).select_related('procedure')
+    clinic_procedures = ClinicProcedure.objects.filter(clinic=clinic).select_related('procedure')
     
     data = {
         'id': clinic.id,
@@ -45,15 +45,16 @@ def get_clinic_detail(request, clinic_id):
         'address': clinic.address,
         'phone_number': clinic.phone_number,
         'email': clinic.email,
-        # 'procedures': [{'id': cp.procedure.id, 'name': cp.procedure.name} for cp in clinic_procedures],
+        'procedures': [{'id': cp.procedure.id, 'name': cp.procedure.name} for cp in clinic_procedures],
         'doctors': [{
             'id': affiliation.doctor.id,
             'name': affiliation.doctor.name,
             'office_address': affiliation.office_address,
-            'working_schedule': 'Schedule info not available',  # You'll need to implement this based on your schedule model
+            'working_schedule': affiliation.working_schedule,  
             'procedures': ', '.join([dp.procedure.name for dp in DoctorProcedure.objects.filter(doctor=affiliation.doctor).select_related('procedure')])
         } for affiliation in doctor_affiliations]
     }
+    # print(data)
     return JsonResponse(data)
 
 @login_required
