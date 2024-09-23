@@ -7,13 +7,17 @@ Its a platform where Bright Smile Dental Systems administrative “Users” can 
 ## Table of Contents
 
 1. [Features](#features)
-2. [Prerequisites](#prerequisites)
-3. [Installation](#installation)
-4. [Database Setup](#database-setup)
-5. [Running the Application](#running-the-application)
-6. [Using the Platform](#using-the-platform)
-7. [API Endpoints](#api-endpoints)
-8. [Assumptions and Configurations](#assumptions-and-configurations)
+2. [Code Structure](#code-structure)
+3. [UI/UX Design Choices](#uiux-design-choices)
+4. [Database Design](#database-design)
+5. [Technical Stack](#technical-stack)
+6. [Prerequisites](#prerequisites)
+7. [Installation](#installation)
+8. [Running the Application](#running-the-application)
+9. [Using the Platform](#using-the-platform)
+10. [API Endpoints](#api-endpoints)
+11. [Assumptions and Configurations](#assumptions-and-configurations)
+12. [Future Improvements](#future-improvements)
 
 ## Features
 
@@ -22,6 +26,46 @@ Its a platform where Bright Smile Dental Systems administrative “Users” can 
 - Appointment scheduling and tracking
 - Visit history and procedure tracking
 - REST APIs for external system integration
+
+## Code Structure
+
+The project follows a modular structure, with separate Django apps for different functionalities:
+
+* `clinics/`: Manages clinic-related models and views
+* `doctors/`: Handles doctor-related functionality
+* `patients/`: Manages patient information and records
+* `appointments/`: Deals with appointment scheduling and management
+* `procedures/`: Manages dental procedures
+
+This modular approach ensures separation of concerns and makes the codebase easier to maintain and extend.
+
+## UI/UX Design Choices
+
+The user interface is designed with simplicity and efficiency in mind:
+
+* JS, Bootstrap is used for responsive design, ensuring compatibility across devices
+* Intuitive navigation with a clear menu structure
+* Form validation provides immediate feedback to users
+* Consistent color scheme and layout across pages for a cohesive experience
+* Modal dialogs for quick actions without leaving the current page
+
+## Database Design
+
+The database is designed to efficiently represent the relationships between entities:
+
+* Clinics, Doctors, and Patients are the core entities
+* Many-to-many relationships (e.g., doctors to clinics) are represented using junction tables
+* Appointments and Visits are separate entities to distinguish between scheduled and completed events
+* Procedures are linked to both doctors and clinics to represent capabilities and offerings
+
+For a detailed database schema, refer to the [Database Specification](database-specification.md) document.
+
+## Technical Stack
+
+* Backend: Django 4.2
+* Frontend: HTML, Bootstrap 5, and JavaScript
+* Database: PostgreSQL 12
+* API: Django Rest Framework
 
 ## Prerequisites
 
@@ -59,15 +103,7 @@ Its a platform where Bright Smile Dental Systems administrative “Users” can 
    ```
    pip install -r requirements.txt
    ```
-
-   Note: If `requirements.txt` is not present, you can create it by running:
-
-   ```
-   pip freeze > requirements.txt
-   ```
-
-
-3. Update the database configuration in `bright_smile/settings.py`:
+5. Update the database configuration in `bright_smile/settings.py`:
 
    ```python
    DATABASES = {
@@ -81,18 +117,17 @@ Its a platform where Bright Smile Dental Systems administrative “Users” can 
        }
    }
    ```
-4. Run migrations:
+6. Run migrations:
 
    ```
    python manage.py migrate
    ```
-5. Create a superuser:
+7. Create a superuser:
 
    ```
    python manage.py createsuperuser
    ```
-
-6. Populating the Database
+8. Populating the Database
 
 After setting up your database schema, you can populate it with sample data using the provided script. Follow these steps:
 
@@ -112,6 +147,8 @@ This script will create:
 - Sample appointments and visits
 
 The data is consistent across all models and provides a good starting point for testing the application.
+
+***Chekout the database-specifiation.md for more details***
 
 ## Running the Application
 
@@ -154,10 +191,6 @@ The data is consistent across all models and provides a good starting point for 
    - **Visits**:
    - Record new visits for patients
    - View and manage visit history
-
-## API Endpoints
-
-The following REST API endpoints are available:
 
 ## API Endpoints
 
@@ -263,6 +296,14 @@ Video :
 ![1727064912435](image/README/1727064912435.png)
 
 ![1727064947209](image/README/1727064947209.png)
+
+## Future Improvements
+
+* Implement a more granular time control for appointments
+* Add support for multiple languages
+* Integrate a calendar view for appointment management
+* Implement real-time notifications for new appointments
+* Add dark mode
 
 ## License
 
