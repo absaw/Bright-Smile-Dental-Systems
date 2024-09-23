@@ -4,6 +4,8 @@ Bright Smile Dental Systems is a comprehensive patient and provider management p
 
 Its a platform where Bright Smile Dental Systems administrative “Users” can efficiently manage these entities and related tasks, such as scheduling appointments and tracking visits.
 
+DEMO VIDEO : [Bright Smile Care Demo Video](demo_video.mp4)
+
 ## Table of Contents
 
 1. [Features](#features)
@@ -267,7 +269,7 @@ Video :
 
 #### CLINICS PAGE
 
-![1727064335106](image/README/1727064335106.png)
+![1727099898074](image/README/1727099898074.png)
 
 #### CLINICS DETAILS PAGE
 
@@ -275,7 +277,7 @@ Video :
 
 #### DOCTORS LIST PAGE
 
-![1727064470630](image/README/1727064470630.png)
+![1727099958080](image/README/1727099958080.png)
 
 #### DOCTORS DETAILS PAGE
 
@@ -285,7 +287,7 @@ Video :
 
 #### PATIENT LIST PAGE
 
-![1727064847099](image/README/1727064847099.png)
+![1727100069369](image/README/1727100069369.png)
 
 #### PATIENT DETAILS PAGE
 
