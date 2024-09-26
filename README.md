@@ -1,5 +1,7 @@
 # Bright-Smile-Dental-Systems
 
+SITE DEPLOYED ON: [EC2](http://54.146.4.186:8000/)
+
 Bright Smile Dental Systems is a comprehensive patient and provider management platform for dental clinics. This system allows administrative employees to efficiently manage clinics, doctors, patients, and appointments across multiple locations.
 
 Its a platform where Bright Smile Dental Systems administrative “Users” can efficiently manage these entities and related tasks, such as scheduling appointments and tracking visits.
