@@ -196,6 +196,32 @@ The data is consistent across all models and provides a good starting point for 
 
 ## API Endpoints
 
+You will need an authorization token with a username and password to use the API endpoints.
+
+You  can use POSTMAN to make a POST request after an account is created to get your authorization token, which you can later use for making HTTP requests to the endpoints; Exact steps:-
+
+a. Get an authentication token:
+
+* Open Postman
+* Create a new POST request
+* URL: `http://localhost:8000/api/get-token/`
+* In the "Body" tab, select "x-www-form-urlencoded"
+* Add two key-value pairs:
+  * Key: `username`, Value: (your user's username)
+  * Key: `password`, Value: (your user's password)
+* Send the request
+* You should receive a response with a token
+
+b. Use the token to access a protected endpoint:
+
+* Create a new GET request
+* URL: `http://localhost:8000/clinics/api/clinics/`
+* In the "Authorization" tab:
+  * Type: Choose "Bearer Token"
+  * Token: Paste the token you received from the previous request
+* Send the request
+* You should now receive the JSON data from your clinics endpoint
+
 The following REST API endpoints are available:
 
 1. **Add Patient**: `POST /patients/api/patients/`
