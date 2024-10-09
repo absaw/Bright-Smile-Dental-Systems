@@ -65,9 +65,9 @@ For a detailed database schema, refer to the [Database Specification](database-s
 ## Technical Stack
 
 * Backend: Django 4.2
-* Frontend: HTML, Bootstrap 5, and JavaScript
+* Frontend: HTML, Bootstrap 4, and JavaScript - Fetch API, DataTable
 * Database: PostgreSQL 12
-* API: Django Rest Framework
+* API: Django REST Framework
 
 ## Prerequisites
 
@@ -250,6 +250,18 @@ The following REST API endpoints are available:
 2. Appointments are scheduled in 1-hour slots.
 3. The system uses Django's built-in authentication system.
 4. Static files are served using Django's `staticfiles` app in development. For production, configure a proper static file serving solution.
+
+## Development Process Flow
+
+1. Installing Postgres locally
+2. Creating BrightSmile database on Postgres
+3. Designing database according to requirement
+   1. Database specification document
+   2. Entity Relationsihip Diagram
+4. Creating Django Project
+5. Defining and creating django apps for clinics, doctors, patients
+6. Defining database tables in django app models files
+7. Makemigrations and Migrate to create tables in existing brightsmile database
 
 ## Site Demo
 
