@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.utils import timezone
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie,csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.db import transaction
@@ -134,8 +134,10 @@ def add_visit(request):
     
 @login_required
 @require_POST
+@csrf_exempt
 def add_patient(request):
     try:
+        # print(request.body)
         patient = Patient.objects.create(
             name=request.POST.get('name'),
             address=request.POST.get('address'),

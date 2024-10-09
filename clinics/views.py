@@ -4,7 +4,7 @@ from .models import Clinic,ClinicProcedure
 from doctors.models import Doctor, DoctorClinicAffiliation, DoctorProcedure
 from procedures.models import Procedure
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie,csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 @login_required
@@ -137,7 +137,8 @@ def clinics_by_procedure(request, procedure_id):
 
 @login_required
 @require_POST
-@ensure_csrf_cookie
+# @ensure_csrf_cookie
+@csrf_exempt
 def add_clinic(request):
     try:
         clinic = Clinic.objects.create(

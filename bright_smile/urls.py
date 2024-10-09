@@ -24,7 +24,7 @@ from django.conf.urls import handler404
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.views import serve
 from django.contrib.auth.decorators import login_required
-
+from .views import get_auth_token
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_required(lambda request: redirect('clinics/')), name='home'),
@@ -35,6 +35,7 @@ urlpatterns = [
     # path('schedules/', include('schedules.urls'),name='schedules'),  
     path('appointments/', include('appointments.urls')),
     path('', include('members.urls')),
+    path('api/get-token/', get_auth_token, name='get_auth_token'),
     
 ]
 # if settings.DEBUG:

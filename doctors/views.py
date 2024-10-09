@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie,csrf_exempt
 from .models import Doctor, DoctorClinicAffiliation, PatientDoctorAffiliation, DoctorProcedure
 from procedures.models import Procedure
 from django.contrib.auth.decorators import login_required
@@ -96,6 +96,7 @@ def doctors_by_procedure_and_clinic(request, procedure_id, clinic_id):
     
 @login_required
 @require_http_methods(["POST"])
+@csrf_exempt
 def add_doctor(request):
     try:
         data = request.POST
@@ -115,61 +116,7 @@ def add_doctor(request):
         print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     
-# @login_required
-# @require_http_methods(["GET"])
-# def get_procedures(request):
-#     procedures = Procedure.objects.all().values('id', 'name')
-#     return JsonResponse(list(procedures), safe=False)
 
 
 
 
-
-
-# @ensure_csrf_cookie
-# working
-# def get_doctor_detail(request, doctor_id):
-#     doctor = get_object_or_404(Doctor, id=doctor_id)
-#     clinic_affiliations = DoctorClinicAffiliation.objects.filter(doctor=doctor).select_related('clinic')
-#     patient_affiliations = PatientDoctorAffiliation.objects.filter(doctor=doctor).select_related('patient')
-    
-#     data = {
-#         'id': doctor.id,
-#         'npi': doctor.npi,
-#         'name': doctor.name,
-#         'email': doctor.email,
-#         'phone_number': doctor.phone_number,
-#         'specialties': [dp.procedure.name for dp in doctor.doctorprocedure_set.all()],
-#         'affiliated_clinics': [{
-#             'name': affiliation.clinic.name,
-#             'office_address': affiliation.office_address,
-#             'working_schedule': affiliation.working_schedule
-#         } for affiliation in clinic_affiliations],
-#         'affiliated_patients': [{
-#             'name': affiliation.patient.name,
-#             'date_of_birth': affiliation.patient.date_of_birth,
-#             'last_visit_date': 'N/A'  # You'll need to implement this based on your visit model
-#         } for affiliation in patient_affiliations]
-#     }
-#     # print(data)
-#     return JsonResponse(data)
-
-# def update_doctor(request, doctor_id):
-#     if request.method == 'POST':
-#         doctor = get_object_or_404(Doctor, id=doctor_id)
-#         doctor.npi = request.POST.get('npi')
-#         doctor.name = request.POST.get('name')
-#         doctor.email = request.POST.get('email')
-#         doctor.phone_number = request.POST.get('phone_number')
-#         doctor.save()
-        
-#         # Update specialties (procedures)
-#         # specialties = request.POST.get('specialties').split(',')
-#         # doctor.doctorprocedure_set.all().delete()
-#         # for specialty in specialties:
-#         #     print(specialty)
-#         #     procedure, _ = Procedure.objects.get_or_create(name=specialty.strip())
-#         #     DoctorProcedure.objects.create(doctor=doctor, procedure=procedure)
-#         # print("here")
-#         return JsonResponse({'status': 'success'})
-#     return JsonResponse({'status': 'error'}, status=400)
