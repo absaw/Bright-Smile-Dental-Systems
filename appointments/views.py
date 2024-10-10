@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Appointment
 from doctors.models import Doctor
 from clinics.models import Clinic
-from patients.models import Patient  # Add this import
-from procedures.models import Procedure  # Add this import
+from patients.models import Patient  
+from procedures.models import Procedure  
 from datetime import datetime, time, timedelta
 from django.db import transaction
 from .models import Appointment, AppointmentProcedure
@@ -40,67 +40,10 @@ def get_available_time_slots(request):
     # Remove booked slots from all slots
     available_slots = [slot for slot in all_slots if slot not in booked_appointments]
 
-    # Format the available slots for the response
-    # slots_data = [
-    #     {
-    #         "date": date_str,
-    #         "start_time": slot.strftime('%H:%M'),
-    #         "end_time": (datetime.combine(date, slot) + timedelta(hours=1)).time().strftime('%H:%M')
-    #     }
-    #     for slot in available_slots
-    # ]
+    
     slots_data = [slot.strftime('%H:%M') for slot in available_slots]
     print(slots_data)
     return JsonResponse(slots_data, safe=False)
-
-# @login_required
-# @require_POST
-# def book_appointment(request):
-#     # Extract data from request
-#     print("Book appointment")
-#     print(request.POST)
-#     patient_id = request.POST.get('patient_id')
-#     doctor_id = request.POST.get('doctor_id')
-#     clinic_id = request.POST.get('clinic_id')
-#     date_str = request.POST.get('date')
-#     time_str = request.POST.get('time')
-#     procedure_id = request.POST.get('procedure_id')
-#     print(patient_id, doctor_id, clinic_id, date_str, time_str, procedure_id)
-#     # Validate data
-#     if not all([patient_id, doctor_id, clinic_id, date_str, time_str, procedure_id]):
-#         print("1")
-#         return JsonResponse({"error": "Missing required parameters"}, status=400)
-
-#     try:
-#         patient = Patient.objects.get(id=patient_id)
-#         doctor = Doctor.objects.get(id=doctor_id)
-#         clinic = Clinic.objects.get(id=clinic_id)
-#         date = datetime.strptime(date_str, '%Y-%m-%d').date()
-#         time = datetime.strptime(time_str, '%H:%M').time()
-#         procedure = Procedure.objects.get(id=procedure_id)
-#     except (ValueError, Patient.DoesNotExist, Doctor.DoesNotExist, Clinic.DoesNotExist, Procedure.DoesNotExist):
-#         print("2")
-        
-#         return JsonResponse({"error": "Invalid input data"}, status=400)
-
-#     # Check if the slot is still available
-#     if Appointment.objects.filter(doctor=doctor, date=date, time=time).exists():
-#         print("3")
-        
-#         return JsonResponse({"error": "This time slot is no longer available"}, status=400)
-    
-
-#     # Create the appointment
-#     appointment = Appointment.objects.create(
-#         patient=patient,
-#         doctor=doctor,
-#         clinic=clinic,
-#         date=date,
-#         time=time,
-#         procedure=procedure
-#     )
-#     print(appointment)
-#     return JsonResponse({"status": "success", "appointment_id": appointment.id})
 
 @login_required
 @require_POST
