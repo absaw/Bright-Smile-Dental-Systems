@@ -39,10 +39,8 @@ def get_available_time_slots(request):
 
     # Remove booked slots from all slots
     available_slots = [slot for slot in all_slots if slot not in booked_appointments]
-
-    
     slots_data = [slot.strftime('%H:%M') for slot in available_slots]
-    print(slots_data)
+    # print(slots_data)
     return JsonResponse(slots_data, safe=False)
 
 @login_required

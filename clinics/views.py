@@ -32,6 +32,15 @@ def get_clinics(request):
     } for clinic in clinics]
     return JsonResponse(data, safe=False)
 
+
+# Notes
+    #safe = True only allows dictionary items to be sent. False allows a list to be sent as well
+    # JsonResponse converts python data structures to JSON formatted strings
+    # The output of JsonResponse is an instance of the HttpResponse class, specifically configured to:
+    # Set the Content-Type header to 'application/json'
+    # Convert the input Python object to a JSON-formatted string
+    # When this response reaches the client, it will be a string containing JSON data. Fetch will convert it to json object using response.json()
+
 @login_required
 @ensure_csrf_cookie
 def get_clinic_detail(request, clinic_id):
